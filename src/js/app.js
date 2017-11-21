@@ -57,11 +57,20 @@
         return Math.pow(groupcount, quorumsizeMin);
     }
 
-    DOM["millennia-worstcase"].calculation = function() {
+    DOM["timespan-worstcase"].calculation = function() {
         var eventsWorstcase = DOM["events-worstcase"].calculation();
         var attackrate = DOM["attackrate"].calculation();
-        var totalAttacks = attackrate * (60 * 60 * 24 * 365 * 1000);
+        var totalAttacks = attackrate * (60 * 60 * 24 * 365); // in years
         return eventsWorstcase / totalAttacks;
+    }
+
+    DOM["timespan-worstcase-pretty"].calculation = function() {
+        return DOM["timespan-worstcase"].calculation();
+    }
+
+    DOM["timespan-worstcase-pretty"].string = function() {
+        var years = DOM["timespan-worstcase"].calculation();
+        return manyYearsPrettified(years);
     }
 
     DOM["joinchance-average"].calculation = function() {
@@ -76,11 +85,20 @@
         return Math.pow(groupcount, quorumsizeAvg);
     }
 
-    DOM["millennia-average"].calculation = function() {
+    DOM["timespan-average"].calculation = function() {
         var eventsAvg = DOM["events-average"].calculation();
         var attackrate = DOM["attackrate"].calculation();
-        var totalAttacks = attackrate * 60 * 60 * 24 * 365 * 1000;
+        var totalAttacks = attackrate * 60 * 60 * 24 * 365;
         return eventsAvg / totalAttacks;
+    }
+
+    DOM["timespan-average-pretty"].calculation = function() {
+        return DOM["timespan-average"].calculation();
+    }
+
+    DOM["timespan-average-pretty"].string = function() {
+        var years = DOM["timespan-average-pretty"].calculation();
+        return manyYearsPrettified(years);
     }
 
     DOM["total-chance-of-control"].calculation = function() {
@@ -227,6 +245,42 @@
             }
         }
         return DOM;
+    }
+
+    function manyYearsPrettified(years) {
+        if (years > 13800000000) {
+            // see https://en.wikipedia.org/wiki/Age_of_the_universe
+            return "the total amount of time the universe has existed";
+        }
+        if (years > 4550000000) {
+            // see #3 http://www.pbs.org/wgbh/evolution/library/faq/cat06.html
+            return "the total amount of time earth has existed";
+        }
+        if (years > 3500000000) {
+            // see #4 http://www.pbs.org/wgbh/evolution/library/faq/cat06.html
+            return "the total amount of time life has existed on earth";
+        }
+        if (years > 100000) {
+            // see #6 http://www.pbs.org/wgbh/evolution/library/faq/cat06.html
+            return "the total amount of time humans have existed";
+        }
+        else {
+            if (years > 1000) {
+                return Math.round(years / 1000) + " thousand years";
+            }
+            else if (years > 1) {
+                return Math.round(years) + " years";
+            }
+            else if (years > 1 / 365) {
+                return Math.round(years*365) + " days";
+            }
+            else if (years > 1 / (365*24)) {
+                return Math.round(years*365*24) + " minutes";
+            }
+            else {
+                return Math.round(years*365*24*60) + " seconds";
+            }
+        }
     }
 
     recalculate();
